@@ -70,7 +70,7 @@ class AdSense {
      */
     function __destructor(){
         @curl_close($this->curl);
-        @unlink($this->coockieFile);
+        @unlink($this->cookieFile);
     }
 
 
@@ -144,6 +144,13 @@ class AdSense {
         }
     }
 
+    /**
+     * Log out
+     */
+    function log_out(){
+        curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/signout");
+        curl_exec($this->curl);
+    }
 
     /**
      * AdSense::parse()
@@ -241,6 +248,20 @@ class AdSense {
     function sincelastpayment(){
         curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/overview?timePeriod=sincelastpayment");
         return $this->parse(curl_exec($this->curl));
+    }
+
+    /**
+     * Get csv data from custom report
+     *
+     * @param int $id
+     * @param string $encoding
+     * @return string
+     */
+    function get_report_as_csv($report_id, $encoding = 'UTF-8'){
+        curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/view-custom.do?reportId=$report_id&outputFormat=TSV_EXCEL");
+
+        //By default report is in UTF-16LE
+        return iconv('UTF-16', $encoding, curl_exec($this->curl));
     }
 
     function report($report_id){
@@ -344,5 +365,3 @@ class AdSense {
       return $result;
     }
 }
-
-?>
