@@ -1,0 +1,6 @@
+2009.02.10
+----------
+Fixed not deleting cookies.
+Added log_out(). Useful when you need to query two and more accounts.
+Added get_report_as_csv().
+Removed trailing ?> not to have accidental symbols in output.
