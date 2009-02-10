@@ -20,6 +20,23 @@
 
 
 /**
+ * sys_get_temp_dir function for the proper work in PHP4
+ * Based on http://www.php.net/sys_get_temp_dir
+ */
+if (!function_exists('sys_get_temp_dir')) {
+  function sys_get_temp_dir() {
+    if (!empty($_ENV['TMP'])) { return realpath($_ENV['TMP']); }
+    if (!empty($_ENV['TMPDIR'])) { return realpath( $_ENV['TMPDIR']); }
+    if (!empty($_ENV['TEMP'])) { return realpath( $_ENV['TEMP']); }
+    $tempfile = tempnam(uniqid(rand(), TRUE), '');
+    if (file_exists($tempfile)) {
+      unlink($tempfile);
+      return realpath(dirname($tempfile));
+    }
+  }
+}
+
+/**
  * PHP class that can retrieve data from AdSense account
  * @package AdSense
  */
@@ -35,20 +52,11 @@ class AdSense {
 
 
     /**
-     * Stores TMP folder path
-     * This folder must be writeble
-     *
-     * @var string
-     */
-    var $tmpPath = '/tmp';
-
-
-    /**
      * AdSense::AdSense()
      * AdSense class constructor
      */
     function AdSense(){
-        $this->cookieFile = tempnam($this->tmpPath, 'cookie');
+        $this->cookieFile = tempnam(sys_get_temp_dir(), 'cookie');
 
         $this->curl = curl_init();
         curl_setopt($this->curl, CURLOPT_HEADER, false);
