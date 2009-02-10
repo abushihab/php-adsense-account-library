@@ -4,3 +4,5 @@ Fixed not deleting cookies.
 Added log_out(). Useful when you need to query two and more accounts.
 Added get_report_as_csv().
 Removed trailing ?> not to have accidental symbols in output.
+Using sys_get_temp_dir function instead of '/tmp' string
+Added sys_get_temp_dir function for the proper work in PHP4
