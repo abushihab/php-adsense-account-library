@@ -137,7 +137,7 @@ class AdSense {
         $content = curl_exec($this->curl);
 
         // did we login ?
-        if (eregi("Log out",  curl_exec($this->curl))) {
+        if (eregi("<a href=\"/adsense/signout\">",  $content)) {
             return true;
         } else {
             return false;
