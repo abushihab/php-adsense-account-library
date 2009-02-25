@@ -20,32 +20,27 @@
 
 
 /**
- * sys_get_temp_dir function for the proper work in PHP4
- * Based on http://www.php.net/sys_get_temp_dir
- */
-if (!function_exists('sys_get_temp_dir')) {
-  function sys_get_temp_dir() {
-    if (!empty($_ENV['TMP'])) { return realpath($_ENV['TMP']); }
-    if (!empty($_ENV['TMPDIR'])) { return realpath( $_ENV['TMPDIR']); }
-    if (!empty($_ENV['TEMP'])) { return realpath( $_ENV['TEMP']); }
-    $tempfile = tempnam(uniqid(rand(), TRUE), '');
-    if (file_exists($tempfile)) {
-      unlink($tempfile);
-      return realpath(dirname($tempfile));
-    }
-  }
-}
-
-/**
  * PHP class that can retrieve data from AdSense account
  * @package AdSense
  */
 class AdSense {
+
+
     /**
      * Stores curl connection handle
+     *
      * @var resource
      */
     var $curl = null;
+
+
+    /**
+     * Stores TMP folder path
+     * This folder must be writeble
+     *
+     * @var string
+     */
+    var $tmpPath = '/tmp';
 
 
     /**
@@ -53,7 +48,7 @@ class AdSense {
      * AdSense class constructor
      */
     function AdSense(){
-        $this->cookieFile = tempnam(sys_get_temp_dir(), 'cookie');
+        $this->cookieFile = tempnam($this->tmpPath, 'cookie');
 
         $this->curl = curl_init();
         curl_setopt($this->curl, CURLOPT_HEADER, false);
@@ -75,7 +70,7 @@ class AdSense {
      */
     function __destructor(){
         @curl_close($this->curl);
-        @unlink($this->cookieFile);
+        @unlink($this->coockieFile);
     }
 
 
@@ -142,20 +137,13 @@ class AdSense {
         $content = curl_exec($this->curl);
 
         // did we login ?
-        if (eregi("Log out",  curl_exec($this->curl))) {
+        if (eregi("<a href=\"/adsense/signout\">",  $content)) {
             return true;
         } else {
             return false;
         }
     }
 
-    /**
-     * Log out
-     */
-    function log_out(){
-        curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/signout");
-        curl_exec($this->curl);
-    }
 
     /**
      * AdSense::parse()
@@ -255,46 +243,6 @@ class AdSense {
         return $this->parse(curl_exec($this->curl));
     }
 
-	/**
-	 * Get current report id by report name.
-	 * Helps to avoid problems with report editing and ids.
-	 *
-	 * @param string $name
-	 * @return int
-	 */
-	function get_report_id_from_name($name){
-		curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/overview");
-		$page = curl_exec($this->curl);
-
-		preg_match('~<a href=".*reportId=([0-9]+)">'.$name.'</a>~i', $page, $matches);
-		
-		if(empty($matches[1])) return false;
-
-		return $matches[1];
-	}
-
-    /**
-     * Get csv data from custom report
-	 * Warning: if you will edit report at Google Adsense page, its id will change!
-     *
-     * @param int $id
-     * @param string $encoding
-     * @return string
-     */
-    function get_report_as_csv($report_id, $encoding = 'UTF-8'){
-        curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/view-custom.do?reportId=$report_id&outputFormat=TSV_EXCEL");
-
-        //By default report is in UTF-16LE
-        return iconv('UTF-16', $encoding, curl_exec($this->curl));
-    }
-
-	/**
-	 * Get report data as array. Uses html parser. A bit slower than get_report_as_csv.
-	 * Warning: if you will edit report at Google Adsense page, its id will change!
-	 *
-	 * @param int $report_id
-	 * @return array
-	 */
     function report($report_id){
       $result = array();
       curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/view-custom.do?reportId=$report_id");
@@ -396,3 +344,5 @@ class AdSense {
       return $result;
     }
 }
+
+?>
