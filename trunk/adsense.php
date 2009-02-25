@@ -41,11 +41,8 @@ if (!function_exists('sys_get_temp_dir')) {
  * @package AdSense
  */
 class AdSense {
-
-
     /**
      * Stores curl connection handle
-     *
      * @var resource
      */
     var $curl = null;
@@ -258,8 +255,27 @@ class AdSense {
         return $this->parse(curl_exec($this->curl));
     }
 
+	/**
+	 * Get current report id by report name.
+	 * Helps to avoid problems with report editing and ids.
+	 *
+	 * @param string $name
+	 * @return int
+	 */
+	function get_report_id_from_name($name){
+		curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/overview");
+		$page = curl_exec($this->curl);
+
+		preg_match('~<a href=".*reportId=([0-9]+)">'.$name.'</a>~i', $page, $matches);
+		
+		if(empty($matches[1])) return false;
+
+		return $matches[1];
+	}
+
     /**
      * Get csv data from custom report
+	 * Warning: if you will edit report at Google Adsense page, its id will change!
      *
      * @param int $id
      * @param string $encoding
@@ -272,6 +288,13 @@ class AdSense {
         return iconv('UTF-16', $encoding, curl_exec($this->curl));
     }
 
+	/**
+	 * Get report data as array. Uses html parser. A bit slower than get_report_as_csv.
+	 * Warning: if you will edit report at Google Adsense page, its id will change!
+	 *
+	 * @param int $report_id
+	 * @return array
+	 */
     function report($report_id){
       $result = array();
       curl_setopt($this->curl, CURLOPT_URL, "https://www.google.com/adsense/report/view-custom.do?reportId=$report_id");
