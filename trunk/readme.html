@@ -8,13 +8,26 @@
     </style>
 </head>
 <body>
-	<h1>PHP Adsense Account Library</h1>
+	<h1>PHP AdSense Account Library</h1>
 	<p><em>Based on <a href="http://www.webtoolkit.info/php-adsense-account-monitor.html">PHP AdSense account monitor class</a></em></p>
-	<p>PHP Adsense Account Library is a class that can retrieve varoius data
+	<p>PHP AdSense Account Library is a class that can retrieve various data
 	from an AdSense account.</p>
 
 	<h2>Examples</h2>
-	
+
+  <pre>require_once('adsense.php');
+
+$username = 'your_email@gmail.com';
+$password = '*******';
+
+$adsense = new AdSense();
+if ($adsense->connect($username, $password)) {
+    var_dump($adsense->today());
+} else {
+    die('Could not login to AdSense account.');
+};
+  </pre>
+
 	<h2>API</h2>
 	<h3>connect($username, $password)</h3>
 	<p>Connects to AdSense account using supplied credentials.
