@@ -1,6 +1,15 @@
 PHP AdSense Account Library changelog
+=====================================
+
+Next Version
+------------
+
+Alexander Makarov (Dec 3, 2009)
+-Changed eregi to preg_match since ereg is deprecated in PHP 5.3.
+-Some code optimizations.
 
 Version 0.2 (Mar 12, 2009)
+--------------------------
 
 Alexander Makarov (Feb 25, 2009)
 -Added get_report_id_from_name() method to deal with report id changes.
@@ -16,15 +25,12 @@ Alex Polski (Feb 10, 2009)
 -Using sys_get_temp_dir function instead of '/tmp' string.
 -Added sys_get_temp_dir function for the proper work in PHP4.
 
-***
-
 Version 0.1.1 (Feb 25, 2009)
+----------------------------
 
 Alex Polski (Feb 25, 2009)
 -Fixed sign in checking in connect() method (issue 1 and 2).
 
-***
-
 Version 0.1 (Feb 05, 2009)
-
+-------------------------
 Initial release.
