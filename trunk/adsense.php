@@ -130,6 +130,12 @@ class AdSense {
         curl_setopt($this->curl, CURLOPT_POST, false);
         curl_setopt($this->curl, CURLOPT_URL, $next_url);
         $content = curl_exec($this->curl);
+
+        // in case of Google Apps email there is no needed to do additional checking 
+        if (preg_match('~<a href="/adsense/signout">~i',  $content)) {
+            return true;
+        }
+
         preg_match('/location\.replace\("(.+?)"\)/', $content, $match);
         $next_url = $match[1];
         $next_url = preg_replace_callback("/\\\\x(..)/i", create_function('$match', 'return chr(hexdec($match[1]));'), $next_url);

@@ -7,6 +7,7 @@ Next Version
 Alexander Makarov (Dec 3, 2009)
 -Changed eregi to preg_match since ereg is deprecated in PHP 5.3.
 -Some code optimizations.
+-Now can be used with Google Apps email.
 
 Version 0.2 (Mar 12, 2009)
 --------------------------
